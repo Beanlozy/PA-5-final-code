@@ -2,13 +2,12 @@ import math
 import os
 from datetime import datetime
 
-# files are read from the same folder as app.py
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-GEAR_FILE = os.path.join(BASE_DIR, "gear.txt")
-PICKUP_FILE = os.path.join(BASE_DIR, "pickup_points.txt")
-CUSTOMER_FILE = os.path.join(BASE_DIR, "customers.txt")
-RENTAL_FILE = os.path.join(BASE_DIR, "rentals.txt")
-REPORT_FILE = os.path.join(BASE_DIR, "reports.txt")
+# the text files have to be in the folder the program is run from
+GEAR_FILE = "gear.txt"
+PICKUP_FILE = "pickup_points.txt"
+CUSTOMER_FILE = "customers.txt"
+RENTAL_FILE = "rentals.txt"
+REPORT_FILE = "reports.txt"
 
 GEAR_TYPES = ["Shade", "Cooler", "Seating", "Audio"]
 GEAR_STATUSES = ["Available", "Unavailable"]
@@ -19,7 +18,7 @@ MAX_ID = 99999
 MAX_UNITS = 9999
 MAX_RATE = 1000
 
-# extras
+# extras 
 MANAGER_PIN = "1234"
 LATE_FEE = 10.00
 STUDENT_DISCOUNT = 0.10
@@ -29,7 +28,7 @@ GAME_DAY_RATE = 1.5
 HOME_GAMES = ["09/05/2026", "09/19/2026", "10/31/2026", "11/14/2026", "11/21/2026"]
 
 
-# record classes
+# record classes, one for each text file
 class Gear:
     def __init__(self, gear_id, item, gear_type, hourly_rate, status, pickup_id, total_units, units_available):
         self._gear_id = gear_id
@@ -263,7 +262,7 @@ class Rental:
                 f"#{self._start}#{self._end}#{cost}#{self._status}")
 
 
-
+# everything is loaded once here, then every change saves right away
 def main():
     gear_list = load_gear()
     pickup_points = load_pickup_points()
@@ -292,7 +291,7 @@ def main():
             print("Invalid choice. Enter 1-4.")
 
 
-# input checks each one keeps asking until the input is good
+# input checks, each one keeps asking until the input is good
 def int_in_range(prompt, low, high):
     while True:
         try:
@@ -317,7 +316,7 @@ def float_in_range(prompt, low, high):
             print("Invalid input. Please enter a number.")
 
 
-
+# a # would break the file format
 def get_text(prompt):
     while True:
         text = input(prompt).strip()
@@ -370,6 +369,7 @@ def get_date(prompt, default=None):
             print("Invalid date. Enter a real date in MM/DD/YYYY format.")
 
 
+# nt means Windows, cls clears the screen there and clear does it on Mac
 def pause():
     input("\nPress Enter to continue...")
     if os.name == "nt":
@@ -408,11 +408,11 @@ def read_records(file_name):
                     records.append(line.split("#"))
             return records
     except FileNotFoundError:
-        print(f"Could not find {os.path.basename(file_name)}. Starting with no records.")
+        print(f"Could not find {file_name}. Starting with no records.")
         return []
 
 
-# each line was split on # and the parts go into a new object lists are sorted by ID so binary_search works on them
+# each line was split on # and the parts go into a new object  lists are sorted by ID so binary_search works on them
 def load_gear():
     gear_list = []
     for parts in read_records(GEAR_FILE):
@@ -560,7 +560,7 @@ def location_name(pickup_points, pickup_id):
     return point.get_location()
 
 
-
+# :<26 pads the text to 26 characters so the columns line up
 def show_gear_table(gear_list, pickup_points):
     print(f"\n{'ID':<5}{'Item':<26}{'Type':<9}{'Rate':>7}  {'Location':<27}{'Status':<13}{'Available':>9}")
     print("-" * 96)
